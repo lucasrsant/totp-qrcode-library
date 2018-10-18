@@ -1,6 +1,6 @@
 package br.edu.fei.server;
 
-import br.edu.fei.auth.security.Security;
+import br.edu.fei.auth.security.KeyStoreManagement;
 import br.edu.fei.server.requests.ConfirmValidationCodeRequest;
 import br.edu.fei.server.requests.RegisterUserRequest;
 import com.google.gson.Gson;
@@ -11,7 +11,7 @@ import static spark.Spark.get;
 public class App {
 
     private static InMemoryRepositoryImpl<String, IdentifiedUserRegistrationRequest> repository = new InMemoryRepositoryImpl<>();
-    private static Security security;
+    private static KeyStoreManagement keyStoreManagement;
 
     public static void main(String[] args) {
 
@@ -28,12 +28,12 @@ public class App {
             return new ConfirmValidationCodeUseCase(App.repository).execute(confirmValidationCodeRequest);
         });
 
-        get("/pubkey", (request, response) -> security.getPublicKey());
+        get("/pubkey", (request, response) -> keyStoreManagement.getPublicKey());
     }
 
     private static void initializeSecurityModule() {
         try {
-            security = new Security("./keys/server_keys.key");
+            keyStoreManagement = new KeyStoreManagement("./keys/serverKeyStore.jks", "totpserver", "123456");
         }
         catch (Exception e) {
             e.printStackTrace();
