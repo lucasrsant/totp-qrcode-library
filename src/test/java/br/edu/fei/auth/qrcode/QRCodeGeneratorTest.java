@@ -1,4 +1,5 @@
-import br.edu.fei.auth.qrcode.QRCodeGenerator;
+package br.edu.fei.auth.qrcode;
+
 import org.junit.Test;
 
 public class QRCodeGeneratorTest {
