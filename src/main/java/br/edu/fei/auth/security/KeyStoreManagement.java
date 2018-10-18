@@ -5,7 +5,7 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.util.Base64;
 
-public class Security {
+public class KeyStoreManagement {
 
     private String jksFilePath;
     private String alias;
@@ -13,7 +13,7 @@ public class Security {
 
     private String publicKey;
 
-    public Security(String jksFilePath, String alias, String password) {
+    public KeyStoreManagement(String jksFilePath, String alias, String password) {
         this.alias = alias;
         this.password = password;
         this.jksFilePath = jksFilePath;
