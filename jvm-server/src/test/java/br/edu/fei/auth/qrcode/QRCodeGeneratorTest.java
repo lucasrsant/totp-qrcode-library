@@ -5,6 +5,6 @@ import org.junit.Test;
 public class QRCodeGeneratorTest {
     @Test
     public void shouldGenerateQRCode() {
-        QRCodeGenerator.generate();
+        QRCodeGenerator.generate("blah");
     }
 }
