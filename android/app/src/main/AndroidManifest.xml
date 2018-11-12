@@ -34,35 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="br.edu.fei.zxingdemo.scanner.CaptureActivity"
-            android:clearTaskOnLaunch="true"
-            android:stateNotNeeded="true"
-            android:theme="@style/CaptureTheme"
-            android:windowSoftInputMode="stateAlwaysHidden">
-            <intent-filter>
-                <action android:name="br.edu.fei.zxingdemo.scanner.SCAN"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".scanner.encode.EncodeActivity"
-            android:stateNotNeeded="true">
-            <intent-filter>
-                <action android:name="com.google.zxing.client.android.ENCODE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-            <!-- This allows us to handle the Share button in Contacts. -->
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/x-vcard"/>
-            </intent-filter>
-            <!-- This allows us to handle sharing any plain text . -->
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/plain"/>
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
