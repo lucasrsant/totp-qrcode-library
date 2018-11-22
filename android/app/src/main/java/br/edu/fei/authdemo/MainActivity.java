@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import br.edu.fei.auth_library.AuthenticationLibrary;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -16,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener onButtonRegisterDeviceClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            AuthenticationLibrary.registerDevice(MainActivity.this, "lucasrsant@gmail.com");
         }
     };
 }

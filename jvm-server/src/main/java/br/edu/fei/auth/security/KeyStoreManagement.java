@@ -24,6 +24,10 @@ public class KeyStoreManagement {
         return Base64.getEncoder().encodeToString(getPublicKey().getEncoded());
     }
 
+    public String getPrivateKeyAsString() throws Exception {
+        return Base64.getEncoder().encodeToString(getPrivateKey().getEncoded());
+    }
+
     public PublicKey getPublicKey() throws Exception {
         if (publicKey == null)
             publicKey = readPublicKey();
