@@ -4,4 +4,5 @@ public class IdentifiedUserRegistrationRequest {
     public String verificationCode;
     public String email;
     public String deviceId;
+    public String devicePublicKey;
 }

@@ -3,16 +3,15 @@ package br.edu.fei.auth_library;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RegisterDevicePayload {
-
+public class ConfirmVerificationCodePayload {
     private final String emailAddress;
     private final String deviceId;
-    private final String devicePublicKey;
+    private final String verificationnCode;
 
-    /*package*/ RegisterDevicePayload(String emailAddress, String deviceId, String publicDeviceKey) {
+    public ConfirmVerificationCodePayload(String emailAddress, String deviceId, String verificationnCode) {
         this.emailAddress = emailAddress;
         this.deviceId = deviceId;
-        this.devicePublicKey = publicDeviceKey;
+        this.verificationnCode = verificationnCode;
     }
 
     public JSONObject toJson() {
@@ -20,9 +19,11 @@ public class RegisterDevicePayload {
             return new JSONObject()
                     .put("emailAddress", emailAddress)
                     .put("deviceId", deviceId)
-                    .put("devicePublicKey", devicePublicKey);
+                    .put("verificationCode", verificationnCode);
         } catch (JSONException e) {
-            return null;
+            e.printStackTrace();
         }
+
+        return null;
     }
 }

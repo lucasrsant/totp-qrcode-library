@@ -1,6 +1,6 @@
 package br.edu.fei.server;
 
-import br.edu.fei.server.requests.ConfirmValidationCodeRequest;
+import br.edu.fei.server.payloads.ConfirmValidationCodeRequest;
 
 public class ConfirmValidationCodeUseCase {
 

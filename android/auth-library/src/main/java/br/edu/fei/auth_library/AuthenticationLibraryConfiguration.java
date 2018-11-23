@@ -4,6 +4,7 @@ public class AuthenticationLibraryConfiguration {
     private String authServerHost;
     private String serverPublicKeyEndpoint;
     private String serverRegisterDeviceEndpoint;
+    private String serverConfirmVerificationCodeEndpoint;
 
     private AuthenticationLibraryConfiguration() {
 
@@ -40,6 +41,11 @@ public class AuthenticationLibraryConfiguration {
 
         public Builder withRegisterDeviceEndpoint(String registerDeviceEndpoint) {
             configuration.serverRegisterDeviceEndpoint = registerDeviceEndpoint;
+            return this;
+        }
+
+        public Builder withConfirmVerificationCodeEndpoint(String confirmVerificationCodeEndpoint) {
+            configuration.serverConfirmVerificationCodeEndpoint = confirmVerificationCodeEndpoint;
             return this;
         }
 

@@ -9,15 +9,12 @@ import br.edu.fei.lite_volley.Request;
 import br.edu.fei.lite_volley.RequestQueue;
 import br.edu.fei.lite_volley.Response;
 import br.edu.fei.lite_volley.VolleyError;
-import br.edu.fei.lite_volley.toolbox.ByteArrayRequest;
 import br.edu.fei.lite_volley.toolbox.JsonObjectRequest;
-import br.edu.fei.lite_volley.toolbox.JsonRequest;
 import br.edu.fei.lite_volley.toolbox.Volley;
 
 public class AuthenticationLibrary {
 
     private static AuthenticationLibraryConfiguration libraryConfiguration;
-    private static AuthenticationLibrary instance;
 
     private AuthenticationLibrary() { }
 
@@ -41,7 +38,7 @@ public class AuthenticationLibrary {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        //Log.d("RegisterDevice", response.toString());
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -54,5 +51,9 @@ public class AuthenticationLibrary {
 
         RequestQueue queue = Volley.newRequestQueue(context);
         queue.add(byteArrayRequest);
+    }
+
+    public static void confirmVerificationCode(Context context, String emailAddress, String verificationCode) {
+
     }
 }

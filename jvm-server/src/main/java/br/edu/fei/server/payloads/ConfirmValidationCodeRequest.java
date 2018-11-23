@@ -1,4 +1,4 @@
-package br.edu.fei.server.requests;
+package br.edu.fei.server.payloads;
 
 public class ConfirmValidationCodeRequest {
     public String email;

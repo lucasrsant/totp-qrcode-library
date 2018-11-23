@@ -3,11 +3,9 @@ package br.edu.fei.server;
 import br.edu.fei.auth.qrcode.QRCodeGenerator;
 import br.edu.fei.auth.security.Encryption;
 import br.edu.fei.auth.security.KeyStoreManagement;
-import br.edu.fei.server.requests.ConfirmValidationCodeRequest;
-import br.edu.fei.server.requests.RegisterUserRequest;
+import br.edu.fei.server.payloads.ConfirmValidationCodeRequest;
+import br.edu.fei.server.payloads.RegisterDevicePayload;
 import com.google.gson.Gson;
-
-import java.util.Base64;
 
 import static spark.Spark.post;
 import static spark.Spark.get;
@@ -23,20 +21,11 @@ public class App {
         initializeSecurityModule();
 
         post("/registerDevice", (request, response) ->  {
-
             EncryptedPayload encryptedPayload = new Gson().fromJson(request.body(), EncryptedPayload.class);
+            byte[] payload = EncryptionManager.decrypt(encryptedPayload, keyStoreManagement.getPrivateKey());
 
-            byte[] encryptedSessionKey = Base64.getDecoder( ).decode(encryptedPayload.sessionKey);
-            byte[] encryptedContent = Base64.getDecoder().decode(encryptedPayload.content);
-
-            byte[] sessionKey = EncryptionManager.decrypt(encryptedSessionKey, keyStoreManagement.getPrivateKey(), "RSA/ECB/PKCS1Padding");
-
-            byte[] payload = EncryptionManager.decrypt(encryptedContent, sessionKey, "AES");
-
-            System.out.println(new String(payload));
-
-            RegisterUserRequest registerUserRequest = new Gson().fromJson(request.body(), RegisterUserRequest.class);
-            new RegisterUserUseCase(new MailSenderImpl(), App.repository).execute(registerUserRequest);
+            RegisterDevicePayload registerDevicePayload = new Gson().fromJson(new String(payload), RegisterDevicePayload.class);
+            new RegisterUserUseCase(new MailSenderImpl(), App.repository).execute(registerDevicePayload);
             return "";
         });
 

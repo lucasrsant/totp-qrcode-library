@@ -41,7 +41,17 @@ public class EncryptionManager {
         return null;
     }
 
-    /*package*/ static byte[] decrypt(byte[] cipherText, Key key, String algorithm) {
+    /*package*/ static byte[] decrypt(EncryptedPayload encryptedPayload, Key key) {
+        byte[] encryptedSessionKey = Base64.getDecoder().decode(encryptedPayload.sessionKey);
+        byte[] encryptedContent = Base64.getDecoder().decode(encryptedPayload.content);
+
+        byte[] sessionKey = EncryptionManager.decrypt(encryptedSessionKey, key, "RSA/ECB/PKCS1Padding");
+        byte[] payload = EncryptionManager.decrypt(encryptedContent, sessionKey, "AES");
+
+        return payload;
+    }
+
+    private static byte[] decrypt(byte[] cipherText, Key key, String algorithm) {
         try {
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.DECRYPT_MODE, key);
@@ -54,7 +64,7 @@ public class EncryptionManager {
         return null;
     }
 
-    /*package*/ static byte[] decrypt(byte[] cipherText, byte[] key, String algorithm) {
+    private static byte[] decrypt(byte[] cipherText, byte[] key, String algorithm) {
         try {
             Key secretKey = new SecretKeySpec(key, 0, key.length, algorithm);
             return decrypt(cipherText, secretKey, algorithm);

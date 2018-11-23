@@ -1,6 +1,6 @@
 package br.edu.fei.server;
 
-import br.edu.fei.server.requests.RegisterUserRequest;
+import br.edu.fei.server.payloads.RegisterDevicePayload;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -14,12 +14,13 @@ public class RegisterUserUseCase {
         this.userRepository = userRepository;
     }
 
-    public void execute(RegisterUserRequest userRegistrationRequest) {
+    public void execute(RegisterDevicePayload userRegistrationRequest) {
 
         String verificationCode = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999));
         IdentifiedUserRegistrationRequest identifiedUserRegistrationRequest = new IdentifiedUserRegistrationRequest();
         identifiedUserRegistrationRequest.deviceId = userRegistrationRequest.deviceId;
-        identifiedUserRegistrationRequest.email = userRegistrationRequest.email;
+        identifiedUserRegistrationRequest.devicePublicKey = userRegistrationRequest.devicePublicKey;
+        identifiedUserRegistrationRequest.email = userRegistrationRequest.emailAddress;
         identifiedUserRegistrationRequest.verificationCode = verificationCode;
 
         userRepository.insertOrUpdate(identifiedUserRegistrationRequest.email, identifiedUserRegistrationRequest);
