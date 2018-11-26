@@ -1,8 +1,17 @@
 package br.edu.fei.server;
 
-public class IdentifiedUserRegistration {
-    public String verificationCode;
-    public String email;
-    public String deviceId;
-    public String devicePublicKey;
+/*package*/ class IdentifiedUserRegistration {
+    /*package*/ String verificationCode;
+    /*package*/ String email;
+    /*package*/ String deviceId;
+    /*package*/ String devicePublicKey;
+    private boolean isVerified = false;
+
+    /*package*/ boolean isVerified() {
+        return isVerified;
+    }
+
+    /*package*/ void setIsVerified() {
+        this.isVerified = true;
+    }
 }

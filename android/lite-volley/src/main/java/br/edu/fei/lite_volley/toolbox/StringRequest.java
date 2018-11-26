@@ -19,11 +19,8 @@ package br.edu.fei.lite_volley.toolbox;
 import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
 
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 
-import br.edu.fei.lite_volley.AuthFailureError;
 import br.edu.fei.lite_volley.NetworkResponse;
 import br.edu.fei.lite_volley.Request;
 import br.edu.fei.lite_volley.Response;
@@ -110,7 +107,7 @@ public class StringRequest extends Request<String> {
     }
 
     @Override
-    public byte[] getBody() throws AuthFailureError {
+    public byte[] getBody() {
         return this.mBody;
     }
 }

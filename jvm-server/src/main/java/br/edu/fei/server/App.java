@@ -2,6 +2,7 @@ package br.edu.fei.server;
 
 import br.edu.fei.auth.qrcode.QRCodeGenerator;
 import br.edu.fei.auth.security.KeyStoreManagement;
+import br.edu.fei.server.payloads.AuthenticateSessionPayload;
 import br.edu.fei.server.payloads.ConfirmValidationCodeRequest;
 import br.edu.fei.server.payloads.RegisterDevicePayload;
 import com.google.gson.Gson;
@@ -31,26 +32,26 @@ public class App {
             return new ConfirmValidationCodeUseCase(App.userRepository).execute(confirmValidationCodeRequest);
         });
 
-        get("/createAuthenticationSession", (request, response) -> {
-            AuthenticationSession authenticationSession = new AuthenticationSession();
-            return QRCodeGenerator.generate(authenticationSession.getId());
+        get("/createAuthenticationSession", (request, response) -> new CreateAuthenticationSessionUseCase(App.authSessionRepository).execute());
+
+        post("/authenticateSession", (request, response) -> {
+            AuthenticateSessionPayload authenticateSessionRequest = decryptRequest(request, AuthenticateSessionPayload.class);
+            return new AuthenticateSessionUseCase(App.authSessionRepository, App.userRepository).execute(authenticateSessionRequest);
         });
 
         get("/pubkey", (request, response) -> keyStoreManagement.getPublicKeyAsString());
-        //get("/auth", (request, response) -> QRCodeGenerator.generate("Teste de biblioteca TOTP"));
     }
 
     private static void initializeSecurityModule() {
         try {
             keyStoreManagement = new KeyStoreManagement("./keys/serverKeyStore.jks", "totpserver", "123456");
-            //encryption = new Encryption(keyStoreManagement);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static <T> T decryptRequest(Request request, Class<T> clazz) throws Exception {
+    private static <T> T decryptRequest(Request request, Class<T> clazz) {
         EncryptedPayload encryptedPayload = new Gson().fromJson(request.body(), EncryptedPayload.class);
         byte[] payload = EncryptionManager.decrypt(encryptedPayload, keyStoreManagement.getPrivateKey());
         return new Gson().fromJson(new String(payload), clazz);

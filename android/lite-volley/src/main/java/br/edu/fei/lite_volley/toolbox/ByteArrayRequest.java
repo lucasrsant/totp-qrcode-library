@@ -93,7 +93,7 @@ public class ByteArrayRequest extends Request<byte[]> {
     }
 
     @Override
-    public byte[] getBody() throws AuthFailureError {
+    public byte[] getBody() {
         return mBody;
     }
 }

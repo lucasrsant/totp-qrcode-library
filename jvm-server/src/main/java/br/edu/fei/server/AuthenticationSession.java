@@ -17,11 +17,19 @@ import java.util.UUID;
     /*package*/ AuthenticationSession() {
         id = UUID.randomUUID().toString();
         hashKey = generateKey();
-        oneTimePassword = TOTPGenerator.generate(new TOTP(8, 30, hashKey, HashingAlgorithm.SHA_256));
+        oneTimePassword = TOTPGenerator.generate(new TOTP(8, 300, hashKey, HashingAlgorithm.SHA_256));
     }
 
     /*package*/ String getId() {
         return id;
+    }
+
+    /*package*/ SecretKey getHashKey() {
+        return hashKey;
+    }
+
+    /*package*/ String getOneTimePassword() {
+        return oneTimePassword;
     }
 
     private SecretKey generateKey() {

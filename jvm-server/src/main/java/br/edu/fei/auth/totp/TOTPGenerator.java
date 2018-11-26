@@ -158,7 +158,7 @@ public class TOTPGenerator {
         return timeSteps.toString();
     }
 
-    public static void main(String[] args) throws NoSuchAlgorithmException {
+    public static void main(String[] args) {
         long startTime = System.nanoTime();
         String seed = "3132333435363738393031323334353637383930";
         //String totp = generate(new TOTP(8, 60, seed, HashingAlgorithm.SHA_512));

@@ -159,7 +159,7 @@ public class VolleyLog {
         }
 
         @Override
-        protected void finalize() throws Throwable {
+        protected void finalize() {
             // Catch requests that have been collected (and hence end-of-lifed)
             // but had no debugging output printed for them.
             if (!mFinished) {

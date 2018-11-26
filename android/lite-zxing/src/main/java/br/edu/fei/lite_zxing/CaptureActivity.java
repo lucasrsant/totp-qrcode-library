@@ -26,14 +26,12 @@ import com.google.zxing.client.result.ResultParser;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
@@ -239,7 +237,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         cameraManager.closeDriver();
         //historyManager = null; // Keep for onActivityResult
         if (!hasSurface) {
-            SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+            SurfaceView surfaceView = findViewById(R.id.preview_view);
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
             surfaceHolder.removeCallback(this);
         }
@@ -279,19 +277,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 return true;
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    /*if (resultCode == RESULT_OK && requestCode == HISTORY_REQUEST_CODE && historyManager != null) {
-      int itemNumber = intent.getIntExtra(Intents.History.ITEM_NUMBER, -1);
-      if (itemNumber >= 0) {
-        HistoryItem historyItem = historyManager.buildHistoryItem(itemNumber);
-        decodeOrStoreSavedBitmap(null, historyItem.getResult());
-      }
-    }*/
-        String x = "a";
-        System.out.print(x);
     }
 
     private void decodeOrStoreSavedBitmap(Bitmap bitmap, Result result) {
@@ -357,24 +342,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 handleDecodeExternally(rawResult, resultHandler, barcode);
                 break;
             case ZXING_LINK:
-                //if (scanFromWebPageManager == null || !scanFromWebPageManager.isScanFromWebPage()) {
-                handleDecodeInternally(rawResult, resultHandler, barcode);
-                //} else {
-                //handleDecodeExternally(rawResult, resultHandler, barcode);
-                //}
+                handleDecodeInternally(rawResult);
                 break;
             case NONE:
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                //if (fromLiveScan && prefs.getBoolean(PreferencesActivity.KEY_BULK_MODE, false)) {
-                //Toast.makeText(getApplicationContext(),
-                //getResources().getString(R.string.msg_bulk_mode_scanned) + " (" + rawResult.getText() + ')',
-                //Toast.LENGTH_SHORT).show();
-
-                // Wait a moment or else it will scan the same barcode continuously about 3 times
-                //restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
-                //} else {
-                handleDecodeInternally(rawResult, resultHandler, barcode);
-                //}
+                handleDecodeInternally(rawResult);
                 break;
         }
     }
@@ -423,88 +394,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     }
 
     // Put up our own UI for how to handle the decoded contents.
-    private void handleDecodeInternally(Result rawResult, ResultHandler resultHandler, Bitmap barcode) {
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        //if (resultHandler.getDefaultButtonID() != null && prefs.getBoolean(PreferencesActivity.KEY_AUTO_OPEN_WEB, false)) {
-        //resultHandler.handleButtonPress(resultHandler.getDefaultButtonID());
-        //return;
-        //}
-
+    private void handleDecodeInternally(Result rawResult) {
         Intent resultIntent = new Intent();
         resultIntent.putExtra(EXTRA_SCAN_CONTENT, rawResult.getText());
 
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
-
-        /*statusView.setVisibility(View.GONE);
-        viewfinderView.setVisibility(View.GONE);
-        resultView.setVisibility(View.VISIBLE);
-
-        ImageView barcodeImageView = findViewById(R.id.barcode_image_view);
-        if (barcode == null) {
-            //barcodeImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.launcher_icon));
-        } else {
-            barcodeImageView.setImageBitmap(barcode);
-        }
-
-        TextView formatTextView = (TextView) findViewById(R.id.format_text_view);
-        formatTextView.setText(rawResult.getBarcodeFormat().toString());
-
-        TextView typeTextView = (TextView) findViewById(R.id.type_text_view);
-        typeTextView.setText(resultHandler.getType().toString());
-
-        DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        TextView timeTextView = (TextView) findViewById(R.id.time_text_view);
-        timeTextView.setText(formatter.format(rawResult.getTimestamp()));
-
-
-        TextView metaTextView = (TextView) findViewById(R.id.meta_text_view);
-        View metaTextViewLabel = findViewById(R.id.meta_text_view_label);
-        metaTextView.setVisibility(View.GONE);
-        metaTextViewLabel.setVisibility(View.GONE);
-        Map<ResultMetadataType, Object> metadata = rawResult.getResultMetadata();
-        if (metadata != null) {
-            StringBuilder metadataText = new StringBuilder(20);
-            for (Map.Entry<ResultMetadataType, Object> entry : metadata.entrySet()) {
-                if (DISPLAYABLE_METADATA_TYPES.contains(entry.getKey())) {
-                    metadataText.append(entry.getValue()).append('\n');
-                }
-            }
-            if (metadataText.length() > 0) {
-                metadataText.setLength(metadataText.length() - 1);
-                metaTextView.setText(metadataText);
-                metaTextView.setVisibility(View.VISIBLE);
-                metaTextViewLabel.setVisibility(View.VISIBLE);
-            }
-        }
-
-        CharSequence displayContents = resultHandler.getDisplayContents();
-        TextView contentsTextView = (TextView) findViewById(R.id.contents_text_view);
-        contentsTextView.setText(displayContents);
-        int scaledSize = Math.max(22, 32 - displayContents.length() / 4);
-        contentsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
-
-        TextView supplementTextView = (TextView) findViewById(R.id.contents_supplement_text_view);
-        supplementTextView.setText("");
-        supplementTextView.setOnClickListener(null);
-
-        int buttonCount = resultHandler.getButtonCount();
-        ViewGroup buttonView = (ViewGroup) findViewById(R.id.result_button_view);
-        buttonView.requestFocus();
-        for (int x = 0; x < ResultHandler.MAX_BUTTON_COUNT; x++) {
-            TextView button = (TextView) buttonView.getChildAt(x);
-            if (x < buttonCount) {
-                button.setVisibility(View.VISIBLE);
-                //button.setText(resultHandler.getButtonText(x));
-                button.setText("blah");
-                button.setOnClickListener(new ResultButtonListener(resultHandler, x));
-            } else {
-                //button.setVisibility(View.GONE);
-            }
-        }*/
-
     }
 
     // Briefly show the contents of the barcode, then handle the result outside Barcode Scanner.
@@ -577,17 +472,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         resultHandler.getDisplayContents() + "&source=zxing";
                 //sendReplyMessage(R.id.launch_product_query, productReplyURL, resultDurationMS);
                 break;
-        }
-    }
-
-    private void sendReplyMessage(int id, Object arg, long delayMS) {
-        if (handler != null) {
-            Message message = Message.obtain(handler, id, arg);
-            if (delayMS > 0L) {
-                handler.sendMessageDelayed(message, delayMS);
-            } else {
-                handler.sendMessage(message);
-            }
         }
     }
 

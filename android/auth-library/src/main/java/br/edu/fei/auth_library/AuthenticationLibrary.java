@@ -3,6 +3,7 @@ package br.edu.fei.auth_library;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -32,18 +33,12 @@ public class AuthenticationLibrary {
         KeyManager.initialize(context, configuration);
     }
 
-    public static void registerDevice(String emailAddress)
+    public static void registerDevice(String emailAddress, final Context context)
     {
         String deviceId = DeviceManager.getDeviceId();
         String publicDeviceKey = KeyManager.getDevicePublicKeyAsString();
-
         JSONObject jsonObject = new RegisterDevicePayload(emailAddress, deviceId, publicDeviceKey).toJson();
-
-        Log.d("RegisterDevice", String.format("decrypted payload: %s", jsonObject.toString()));
-
         EncryptedPayload encryptedPayload = EncryptionManager.encrypt(jsonObject.toString().getBytes());
-
-        Log.d("RegisterDevice", String.format("encrypted payload: %s", encryptedPayload.toJson().toString()));
 
         StringRequest jsonRequest = new StringRequest(Request.Method.POST,
                 libraryConfiguration.getRegisterDeviceUrl(),
@@ -51,6 +46,7 @@ public class AuthenticationLibrary {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Toast.makeText(context, response, Toast.LENGTH_LONG).show();
                         Log.d("RegisterDevice", response);
                     }
                 },
@@ -65,23 +61,18 @@ public class AuthenticationLibrary {
         requestQueue.add(jsonRequest);
     }
 
-    public static void confirmVerificationCode(String emailAddress, String verificationCode) {
+    public static void confirmVerificationCode(String emailAddress, String verificationCode, final Context context) {
         String deviceId = DeviceManager.getDeviceId();
-
         JSONObject jsonObject = new ConfirmVerificationCodePayload(emailAddress, deviceId, verificationCode).toJson();
-
-        Log.d("ConfirmVerificationCode", String.format("decrypted payload: %s", jsonObject.toString()));
-
         EncryptedPayload encryptedPayload = EncryptionManager.encrypt(jsonObject.toString().getBytes());
 
-        Log.d("ConfirmVerificationCode", String.format("encrypted payload: %s", encryptedPayload.toJson().toString()));
-
-        StringRequest jsonRequest = new StringRequest(Request.Method.POST,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 libraryConfiguration.getConfirmVerificationCodeEndpoint(),
                 encryptedPayload.toJson().toString(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Toast.makeText(context, response, Toast.LENGTH_LONG).show();
                         Log.d("ConfirmVerificationCode", response);
                     }
                 },
@@ -92,7 +83,7 @@ public class AuthenticationLibrary {
                     }
                 });
 
-        requestQueue.add(jsonRequest);
+        requestQueue.add(stringRequest);
     }
 
     public static void scanAuthenticationSession(Activity activity) {
@@ -100,7 +91,28 @@ public class AuthenticationLibrary {
         intentIntegrator.initiateScan(activity);
     }
 
-    public static void authenticate(String sessionId) {
-        Log.d("Authenticate", "sessionId = " + sessionId);
+    public static void authenticateSession(String sessionId, final Context context) {
+        String deviceId = DeviceManager.getDeviceId();
+        JSONObject jsonObject = new AuthenticateSessionPayload(sessionId, deviceId).toJson();
+        EncryptedPayload encryptedPayload = EncryptionManager.encrypt(jsonObject.toString().getBytes());
+
+        StringRequest jsonRequest = new StringRequest(Request.Method.POST,
+                libraryConfiguration.getAuthenticateSessionEndpoint(),
+                encryptedPayload.toJson().toString(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(context, response, Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
+                        Log.e("AuthenticateSession", Log.getStackTraceString(error));
+                    }
+                });
+
+        requestQueue.add(jsonRequest);
     }
 }

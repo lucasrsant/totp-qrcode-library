@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import br.edu.fei.auth_library.AuthenticationLibrary;
-import br.edu.fei.lite_zxing.IntentIntegrator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,14 +29,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == AuthenticationLibrary.SCAN_SESSION_REQUEST_CODE)
-            AuthenticationLibrary.authenticate(data.getStringExtra(AuthenticationLibrary.EXTRA_SCAN_SESSION_ID));
+        if(requestCode == AuthenticationLibrary.SCAN_SESSION_REQUEST_CODE && data != null)
+            AuthenticationLibrary.authenticateSession(data.getStringExtra(AuthenticationLibrary.EXTRA_SCAN_SESSION_ID), this);
     }
 
     private View.OnClickListener onButtonRegisterDeviceClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            AuthenticationLibrary.registerDevice(editTextEmailAddress.getText().toString());
+            AuthenticationLibrary.registerDevice(editTextEmailAddress.getText().toString(), MainActivity.this);
         }
     };
 
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             String emailAddress = editTextEmailAddress.getText().toString();
             String confirmationCode = editTextConfirmationCode.getText().toString();
-            AuthenticationLibrary.confirmVerificationCode(emailAddress, confirmationCode);
+            AuthenticationLibrary.confirmVerificationCode(emailAddress, confirmationCode, MainActivity.this);
         }
     };
 

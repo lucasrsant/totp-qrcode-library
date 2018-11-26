@@ -13,7 +13,10 @@ public class ConfirmValidationCodeUseCase {
     public String execute(ConfirmValidationCodeRequest request) {
         if(repository.contains(request.deviceId)) {
             IdentifiedUserRegistration registrationRequest = repository.get(request.deviceId);
-            return isValidConfirmation(request, registrationRequest) ? "valid" : "invalid";
+            if(isValidConfirmation(request, registrationRequest)) {
+                registrationRequest.setIsVerified();
+                return "valid";
+            }
         }
 
         return "invalid";

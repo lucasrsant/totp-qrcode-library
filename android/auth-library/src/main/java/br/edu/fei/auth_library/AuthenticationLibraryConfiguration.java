@@ -5,6 +5,7 @@ public class AuthenticationLibraryConfiguration {
     private String serverPublicKeyEndpoint;
     private String serverRegisterDeviceEndpoint;
     private String serverConfirmVerificationCodeEndpoint;
+    private String serverAuthenticateSessionEndpoint;
 
     private AuthenticationLibraryConfiguration() {
 
@@ -20,6 +21,10 @@ public class AuthenticationLibraryConfiguration {
 
     public String getConfirmVerificationCodeEndpoint() {
         return String.format("%s/%s", authServerHost, serverConfirmVerificationCodeEndpoint);
+    }
+
+    public String getAuthenticateSessionEndpoint() {
+        return String.format("%s/%s", authServerHost, serverAuthenticateSessionEndpoint);
     }
 
     public static class Builder
@@ -50,6 +55,11 @@ public class AuthenticationLibraryConfiguration {
 
         public Builder withConfirmVerificationCodeEndpoint(String confirmVerificationCodeEndpoint) {
             configuration.serverConfirmVerificationCodeEndpoint = confirmVerificationCodeEndpoint;
+            return this;
+        }
+
+        public Builder withAuthenticateSessionEndpoint(String authenticateSessionEndpoint) {
+            configuration.serverAuthenticateSessionEndpoint = authenticateSessionEndpoint;
             return this;
         }
 
