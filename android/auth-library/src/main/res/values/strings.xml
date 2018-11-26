@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">auth-library</string>
+    <string name="preference_file_key">br.edu.fei.auth_library.PREFERENCE_FILE_KEY</string>
+</resources>

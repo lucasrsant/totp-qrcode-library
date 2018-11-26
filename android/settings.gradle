@@ -1,0 +1,1 @@
+include ':app', ':lite-zxing', ':lite-volley', ':auth-library'

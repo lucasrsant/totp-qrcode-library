@@ -1,1 +1,11 @@
 DS_Store
+.DS_Store
+*.png
+*.jpg
+.idea
+target
+*.key
+keys
+**/.gradle
+*.bin
+*.lock
