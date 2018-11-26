@@ -66,7 +66,6 @@ final class QRCodeEncoder {
     private final Context activity;
     private String contents;
     private String displayContents;
-    private String title;
     private BarcodeFormat format;
     private final int dimension;
     private final boolean useVCard;
@@ -83,21 +82,10 @@ final class QRCodeEncoder {
         }
     }
 
-    String getContents() {
-        return contents;
-    }
-
     String getDisplayContents() {
         return displayContents;
     }
 
-    String getTitle() {
-        return title;
-    }
-
-    boolean isUseVCard() {
-        return useVCard;
-    }
 
     // It would be nice if the string encoding lived in the core ZXing library,
     // but we use platform specific code like PhoneNumberUtils, so it can't.
@@ -123,7 +111,6 @@ final class QRCodeEncoder {
             if (data != null && !data.isEmpty()) {
                 contents = data;
                 displayContents = data;
-                //title = activity.getString(R.string.contents_text);
             }
         }
     }
@@ -171,7 +158,6 @@ final class QRCodeEncoder {
         } else {
             displayContents = contents;
         }
-        //title = activity.getString(R.string.contents_text);
     }
 
     // Handles send intents from the Contacts app, retrieving a contact as a VCARD.
@@ -223,7 +209,6 @@ final class QRCodeEncoder {
                 if (textData != null && !textData.isEmpty()) {
                     contents = textData;
                     displayContents = textData;
-                    //title = activity.getString(R.string.contents_text);
                 }
                 break;
 
@@ -232,7 +217,6 @@ final class QRCodeEncoder {
                 if (emailData != null) {
                     contents = "mailto:" + emailData;
                     displayContents = emailData;
-                    //title = activity.getString(R.string.contents_email);
                 }
                 break;
 
@@ -241,7 +225,6 @@ final class QRCodeEncoder {
                 if (phoneData != null) {
                     contents = "tel:" + phoneData;
                     displayContents = ContactEncoder.formatPhone(phoneData);
-                    //title = activity.getString(R.string.contents_phone);
                 }
                 break;
 
@@ -250,7 +233,6 @@ final class QRCodeEncoder {
                 if (smsData != null) {
                     contents = "sms:" + smsData;
                     displayContents = ContactEncoder.formatPhone(smsData);
-                    //title = activity.getString(R.string.contents_sms);
                 }
                 break;
 
@@ -281,7 +263,6 @@ final class QRCodeEncoder {
                     if (!encoded[1].isEmpty()) {
                         contents = encoded[0];
                         displayContents = encoded[1];
-                        //title = activity.getString(R.string.contents_contact);
                     }
 
                 }
@@ -296,7 +277,6 @@ final class QRCodeEncoder {
                     if (latitude != Float.MAX_VALUE && longitude != Float.MAX_VALUE) {
                         contents = "geo:" + latitude + ',' + longitude;
                         displayContents = latitude + "," + longitude;
-                        //title = activity.getString(R.string.contents_location);
                     }
                 }
                 break;

@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.edu.fei</groupId>
-    <artifactId>topt-qrcode-server-library</artifactId>
-    <version>0.0.1</version>
+    <artifactId>server_auth_library</artifactId>
+    <version>1.0-alpha</version>
     <build>
         <plugins>
             <plugin>
@@ -22,25 +22,15 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.3.3</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-core</artifactId>
-            <version>2.7.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.21</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -48,11 +38,6 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>br.edu.fei</groupId>
-            <artifactId>server_auth_library</artifactId>
-            <version>1.0-alpha</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
+
 </project>

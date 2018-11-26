@@ -31,7 +31,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
@@ -43,7 +42,6 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Map;
 
 import br.edu.fei.lite_zxing.camera.CameraManager;
@@ -65,22 +63,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     private static final long DEFAULT_INTENT_RESULT_DURATION_MS = 1500L;
 
-    private static final Collection<ResultMetadataType> DISPLAYABLE_METADATA_TYPES =
-            EnumSet.of(ResultMetadataType.ISSUE_NUMBER,
-                    ResultMetadataType.SUGGESTED_PRICE,
-                    ResultMetadataType.ERROR_CORRECTION_LEVEL,
-                    ResultMetadataType.POSSIBLE_COUNTRY);
-
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
-    private Result savedResultToShow;
     private ViewfinderView viewfinderView;
     private TextView statusView;
     private View resultView;
     private Result lastResult;
     private boolean hasSurface;
     private IntentSource source;
-    private String sourceUrl;
     private Collection<BarcodeFormat> decodeFormats;
     private Map<DecodeHintType, ?> decodeHints;
     private String characterSet;
@@ -110,8 +100,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
         ambientLightManager = new AmbientLightManager(this);
-
-        //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }
 
     @Override
@@ -133,14 +121,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         handler = null;
         lastResult = null;
 
-
-
-    /*if (prefs.getBoolean(PreferencesActivity.KEY_DISABLE_AUTO_ORIENTATION, true)) {
-      setRequestedOrientation(getCurrentOrientation());
-    } else {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-    }*/
-
         resetStatusView();
 
         ambientLightManager.start(cameraManager);
@@ -150,7 +130,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         Intent intent = getIntent();
 
         source = IntentSource.NONE;
-        sourceUrl = null;
+
         decodeFormats = null;
         characterSet = null;
 
@@ -192,22 +172,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
                 // Scan only products and send the result to mobile Product Search.
                 source = IntentSource.PRODUCT_SEARCH_LINK;
-                sourceUrl = dataString;
                 decodeFormats = DecodeFormatManager.PRODUCT_FORMATS;
 
-            } /*else if (isZXingURL(dataString)) {
-
-        // Scan formats requested in query string (all formats if none specified).
-        // If a return URL is specified, send the results there. Otherwise, handle it ourselves.
-        source = IntentSource.ZXING_LINK;
-        sourceUrl = dataString;
-        Uri inputUri = Uri.parse(dataString);
-
-        decodeFormats = DecodeFormatManager.parseDecodeFormats(inputUri);
-        // Allow a sub-set of the hints to be specified by the caller.
-        decodeHints = DecodeHintManager.parseDecodeHints(inputUri);
-
-      }*/
+            }
 
             characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET);
 
@@ -279,22 +246,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         return super.onKeyDown(keyCode, event);
     }
 
-    private void decodeOrStoreSavedBitmap(Bitmap bitmap, Result result) {
-        // Bitmap isn't used yet -- will be used soon
-        if (handler == null) {
-            savedResultToShow = result;
-        } else {
-            if (result != null) {
-                savedResultToShow = result;
-            }
-            if (savedResultToShow != null) {
-                Message message = Message.obtain(handler, Constants.ID_DECODE_SUCCEEDEED, savedResultToShow);
-                handler.sendMessage(message);
-            }
-            savedResultToShow = null;
-        }
-    }
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (holder == null) {
@@ -326,7 +277,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
         inactivityTimer.onActivity();
         lastResult = rawResult;
-        ResultHandler resultHandler = new TextResultHandler(this, ResultParser.parseResult(rawResult), rawResult);
+        ResultHandler resultHandler = new TextResultHandler(this, ResultParser.parseResult(rawResult));
 
         boolean fromLiveScan = barcode != null;
         if (fromLiveScan) {
@@ -461,16 +412,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         }
                     }
                 }
-                //sendReplyMessage(R.id.return_scan_result, intent, resultDurationMS);
-                break;
 
-            case PRODUCT_SEARCH_LINK:
-                // Reformulate the URL which triggered us into a query, so that the request goes to the same
-                // TLD as the scan URL.
-                int end = sourceUrl.lastIndexOf("/scan");
-                String productReplyURL = sourceUrl.substring(0, end) + "?q=" +
-                        resultHandler.getDisplayContents() + "&source=zxing";
-                //sendReplyMessage(R.id.launch_product_query, productReplyURL, resultDurationMS);
                 break;
         }
     }
@@ -493,7 +435,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         characterSet,
                         cameraManager);
             }
-            decodeOrStoreSavedBitmap(null, null);
+            //decodeOrStoreSavedBitmap(null);
         } catch (IOException ioe) {
             Log.w(TAG, ioe);
             displayFrameworkBugMessageAndExit();
