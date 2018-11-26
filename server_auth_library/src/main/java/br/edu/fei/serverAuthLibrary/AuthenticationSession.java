@@ -35,7 +35,7 @@ public class AuthenticationSession {
             return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-        }
+        }   
 
         return null;
     }

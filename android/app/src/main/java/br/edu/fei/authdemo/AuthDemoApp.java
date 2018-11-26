@@ -12,10 +12,10 @@ public class AuthDemoApp extends Application {
         super.onCreate();
         AuthenticationLibrary.initialize(this,
                 AuthenticationLibraryConfiguration.Builder.newBuilder()
-                        .withPublicKeyEndpoint("/pubkey")
-                        .withRegisterDeviceEndpoint("/registerDevice")
-                        .withConfirmVerificationCodeEndpoint("/validateCode")
-                        .withAuthenticateSessionEndpoint("/authenticateSession")
+                        .withPublicKeyEndpoint("pubkey")
+                        .withRegisterDeviceEndpoint("registerDevice")
+                        .withConfirmVerificationCodeEndpoint("validateCode")
+                        .withAuthenticateSessionEndpoint("authenticateSession")
                         .withServerHost("http://192.168.4.100:4567")
                         .build());
     }

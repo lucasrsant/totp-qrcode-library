@@ -20,6 +20,8 @@ import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.Map;
 
 import br.edu.fei.lite_volley.NetworkResponse;
 import br.edu.fei.lite_volley.Request;
@@ -104,6 +106,11 @@ public class StringRequest extends Request<String> {
             parsed = new String(response.data);
         }
         return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+    }
+
+    @Override
+    public Map<String, String> getHeaders() {
+        return Collections.singletonMap("Content-Type", "application/json");
     }
 
     @Override
