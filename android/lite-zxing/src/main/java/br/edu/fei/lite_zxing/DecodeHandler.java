@@ -35,8 +35,6 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
-import br.edu.fei.lite_zxing.R;
-
 final class DecodeHandler extends Handler {
 
     private static final String TAG = DecodeHandler.class.getSimpleName();
@@ -96,7 +94,7 @@ final class DecodeHandler extends Handler {
             long end = System.currentTimeMillis();
             Log.d(TAG, "Found barcode in " + (end - start) + " ms");
             if (handler != null) {
-                Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult);
+                Message message = Message.obtain(handler, Constants.ID_DECODE_SUCCEEDEED, rawResult);
                 Bundle bundle = new Bundle();
                 bundleThumbnail(source, bundle);
                 message.setData(bundle);
@@ -104,7 +102,7 @@ final class DecodeHandler extends Handler {
             }
         } else {
             if (handler != null) {
-                Message message = Message.obtain(handler, R.id.decode_failed);
+                Message message = Message.obtain(handler, Constants.ID_DECODE_FAILED);
                 message.sendToTarget();
             }
         }

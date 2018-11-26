@@ -1,13 +1,15 @@
 package br.edu.fei.auth.totp;
 
+import javax.crypto.SecretKey;
+
 public class TOTP {
 
     private final int returnDigits;
     private final long duration;
-    private final String hashKey;
+    private final SecretKey hashKey;
     private final HashingAlgorithm hashingAlgorithm;
 
-    public TOTP(int returnDigits, long duration, String hashKey, HashingAlgorithm hashingAlgorithm) {
+    public TOTP(int returnDigits, long duration, SecretKey hashKey, HashingAlgorithm hashingAlgorithm) {
         this.returnDigits = returnDigits;
         this.duration = duration;
         this.hashKey = hashKey;
@@ -22,7 +24,7 @@ public class TOTP {
         return duration;
     }
 
-    public String getHashKey() {
+    public SecretKey getHashKey() {
         return hashKey;
     }
 

@@ -4,42 +4,32 @@ import java.io.FileInputStream;
 import java.security.*;
 import java.util.Base64;
 
-import org.jetbrains.annotations.Nullable;
-
 public class KeyStoreManagement {
 
-    private String jksFilePath;
-    private String alias;
-    private String password;
-
     private PublicKey publicKey;
+    private PrivateKey privateKey;
 
-    public KeyStoreManagement(String jksFilePath, String alias, String password) {
-        this.alias = alias;
-        this.password = password;
-        this.jksFilePath = jksFilePath;
+    public KeyStoreManagement(String jksFilePath, String alias, String password) throws Exception {
+        readKeys(jksFilePath, alias, password);
     }
 
-    public String getPublicKeyAsString() throws Exception {
+    public String getPublicKeyAsString() {
         return Base64.getEncoder().encodeToString(getPublicKey().getEncoded());
     }
 
-    public String getPrivateKeyAsString() throws Exception {
+    public String getPrivateKeyAsString() {
         return Base64.getEncoder().encodeToString(getPrivateKey().getEncoded());
     }
 
-    public PublicKey getPublicKey() throws Exception {
-        if (publicKey == null)
-            publicKey = readPublicKey();
-
+    public PublicKey getPublicKey() {
         return publicKey;
     }
 
-    public PrivateKey getPrivateKey() throws Exception {
-        return readPrivateKey();
+    public PrivateKey getPrivateKey() {
+        return privateKey;
     }
 
-    private @Nullable PublicKey readPublicKey() throws Exception {
+    private void readKeys(String jksFilePath, String alias, String password) throws Exception {
 
         FileInputStream inputStream = null;
 
@@ -50,36 +40,14 @@ public class KeyStoreManagement {
 
             Key key = keyStore.getKey(alias, password.toCharArray());
 
-            if(key instanceof PrivateKey)
-                return keyStore.getCertificate(alias).getPublicKey();
+            if(key instanceof PrivateKey) {
+                this.publicKey = keyStore.getCertificate(alias).getPublicKey();
+                this.privateKey = (PrivateKey)key;
+            }
         }
         finally {
             if(inputStream != null)
                 inputStream.close();
         }
-
-        return null;
-    }
-
-    private @Nullable PrivateKey readPrivateKey() throws Exception {
-
-        FileInputStream inputStream = null;
-
-        try {
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            inputStream = new FileInputStream(jksFilePath);
-            keyStore.load(inputStream, password.toCharArray());
-
-            Key key = keyStore.getKey(alias, password.toCharArray());
-
-            if(key instanceof PrivateKey)
-                return (PrivateKey)key;
-        }
-        finally {
-            if(inputStream != null)
-                inputStream.close();
-        }
-
-        return null;
     }
 }

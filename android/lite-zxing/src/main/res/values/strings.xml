@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">lite-zxing</string>
+    <string name="preferences_front_light_on">on</string>
+    <string name="preferences_front_light_auto">auto</string>
+    <string name="preferences_front_light_off">off</string>
+    <string name="msg_default_type">Type</string>
+    <string name="msg_default_time">Time</string>
+    <string name="msg_default_meta">Metadata</string>
+    <string name="msg_default_status">Alinhar código de barras com o exemplo para ser lido.</string>
+    <string name="msg_camera_framework_bug">Desculpe, a câmera do Android encontrou um problema. Poderá precisar reiniciar o dispositivo.</string>
+    <string name="msg_default_format">Format</string>
+    <string name="msg_intent_failed">Intent failed</string>
+    <string name="result_text">Texto simples encontrado</string>
+    <string name="button_ok">OK</string>
+
+    <string name="id_decode"/>
+    <string name="id_decode_failed"/>
+    <item type="id" name="id_decode_succeeded"/>
+    <item type="id" name="id_launch_product_query"/>
+    <item type="id" name="id_quit"/>
+    <item type="id" name="id_restart_preview"/>
+    <item type="id" name="id_return_scan_result"/>
 </resources>

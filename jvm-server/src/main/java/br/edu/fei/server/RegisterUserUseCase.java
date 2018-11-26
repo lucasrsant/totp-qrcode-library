@@ -4,27 +4,33 @@ import br.edu.fei.server.payloads.RegisterDevicePayload;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RegisterUserUseCase {
+/*package*/ class RegisterUserUseCase {
 
     private final MailSender mailSender;
-    private final Repository<String, IdentifiedUserRegistrationRequest> userRepository;
+    private final Repository<String, IdentifiedUserRegistration> userRepository;
 
-    public RegisterUserUseCase(MailSender mailSender, Repository<String, IdentifiedUserRegistrationRequest> userRepository) {
+    /*package*/ RegisterUserUseCase(MailSender mailSender, Repository<String, IdentifiedUserRegistration> userRepository) {
         this.mailSender = mailSender;
         this.userRepository = userRepository;
     }
 
-    public void execute(RegisterDevicePayload userRegistrationRequest) {
+    /*package*/ String execute(RegisterDevicePayload request) {
+
+        if(userRepository.contains(request.deviceId))
+            return userRepository.get(request.deviceId).email.equals(request.emailAddress)
+                    ? "device_already_registered" : "unable_to_register_device";
 
         String verificationCode = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999));
-        IdentifiedUserRegistrationRequest identifiedUserRegistrationRequest = new IdentifiedUserRegistrationRequest();
-        identifiedUserRegistrationRequest.deviceId = userRegistrationRequest.deviceId;
-        identifiedUserRegistrationRequest.devicePublicKey = userRegistrationRequest.devicePublicKey;
-        identifiedUserRegistrationRequest.email = userRegistrationRequest.emailAddress;
-        identifiedUserRegistrationRequest.verificationCode = verificationCode;
+        IdentifiedUserRegistration identifiedUserRegistration = new IdentifiedUserRegistration();
+        identifiedUserRegistration.deviceId = request.deviceId;
+        identifiedUserRegistration.devicePublicKey = request.devicePublicKey;
+        identifiedUserRegistration.email = request.emailAddress;
+        identifiedUserRegistration.verificationCode = verificationCode;
 
-        userRepository.insertOrUpdate(identifiedUserRegistrationRequest.email, identifiedUserRegistrationRequest);
+        userRepository.insertOrUpdate(identifiedUserRegistration.deviceId, identifiedUserRegistration);
 
         mailSender.sendVerificationCode(String.valueOf(verificationCode));
+
+        return "device_registered";
     }
 }

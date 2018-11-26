@@ -18,6 +18,10 @@ public class AuthenticationLibraryConfiguration {
         return String.format("%s/%s", authServerHost, serverRegisterDeviceEndpoint);
     }
 
+    public String getConfirmVerificationCodeEndpoint() {
+        return String.format("%s/%s", authServerHost, serverConfirmVerificationCodeEndpoint);
+    }
+
     public static class Builder
     {
         private AuthenticationLibraryConfiguration configuration;

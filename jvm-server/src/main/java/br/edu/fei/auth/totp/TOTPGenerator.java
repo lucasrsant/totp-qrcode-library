@@ -17,6 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
@@ -108,7 +109,7 @@ public class TOTPGenerator {
      *              {@link truncationDigits} digits
      */
 
-    private static String generateTOTP(String key, String time, int returnDigits, String crypto){
+    private static String generateTOTP(SecretKey key, String time, int returnDigits, String crypto){
 
 
         // Using the counter
@@ -122,8 +123,8 @@ public class TOTPGenerator {
 
         // Get the HEX in a Byte[]
         byte[] msg = hexStr2Bytes(timeStringBuilder.toString());
-        byte[] k = hexStr2Bytes(key);
-        byte[] hash = hmac_sha(crypto, k, msg);
+        //byte[] k = hexStr2Bytes(key);
+        byte[] hash = hmac_sha(crypto, key.getEncoded(), msg);
 
         // put selected bytes into result int
         int offset = hash[hash.length - 1] & 0xf;
@@ -160,9 +161,9 @@ public class TOTPGenerator {
     public static void main(String[] args) throws NoSuchAlgorithmException {
         long startTime = System.nanoTime();
         String seed = "3132333435363738393031323334353637383930";
-        String totp = generate(new TOTP(8, 60, seed, HashingAlgorithm.SHA_512));
+        //String totp = generate(new TOTP(8, 60, seed, HashingAlgorithm.SHA_512));
 
-        System.out.println(new String(Base64.getEncoder().encode(MessageDigest.getInstance("SHA-256").digest(totp.getBytes()))));
+        //System.out.println(new String(Base64.getEncoder().encode(MessageDigest.getInstance("SHA-256").digest(totp.getBytes()))));
 
         long endTime = System.nanoTime();
 

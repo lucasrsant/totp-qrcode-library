@@ -1,13 +1,11 @@
 package br.edu.fei.server;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-public class EncryptionManager {
+/*package*/ class EncryptionManager {
     /*package*/ /*static EncryptedPayload encrypt(byte[] plainText) {
         EncryptedPayload encryptedPayload = new EncryptedPayload();
 
@@ -46,9 +44,7 @@ public class EncryptionManager {
         byte[] encryptedContent = Base64.getDecoder().decode(encryptedPayload.content);
 
         byte[] sessionKey = EncryptionManager.decrypt(encryptedSessionKey, key, "RSA/ECB/PKCS1Padding");
-        byte[] payload = EncryptionManager.decrypt(encryptedContent, sessionKey, "AES");
-
-        return payload;
+        return EncryptionManager.decrypt(encryptedContent, sessionKey, "AES");
     }
 
     private static byte[] decrypt(byte[] cipherText, Key key, String algorithm) {

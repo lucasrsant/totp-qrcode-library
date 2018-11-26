@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <EditText
+        android:id="@+id/editTextEmailAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:hint="Email address" />
+
     <Button
         android:id="@+id/buttonRegisterDevice"
         android:layout_width="wrap_content"
@@ -19,15 +27,18 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="number"
-        android:hint="Verification code"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonRegisterDevice"
-        tools:layout_editor_absoluteX="84dp" />
+        android:hint="Verification code" />
 
     <Button
         android:id="@+id/buttonConfirmVerificationCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Send verification code" />
+
+    <Button
+        android:id="@+id/buttonAuthenticate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Authenticate" />
     
 </LinearLayout>

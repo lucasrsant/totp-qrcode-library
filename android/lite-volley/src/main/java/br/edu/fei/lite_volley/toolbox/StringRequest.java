@@ -18,8 +18,12 @@ package br.edu.fei.lite_volley.toolbox;
 
 import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
+
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 
+import br.edu.fei.lite_volley.AuthFailureError;
 import br.edu.fei.lite_volley.NetworkResponse;
 import br.edu.fei.lite_volley.Request;
 import br.edu.fei.lite_volley.Response;
@@ -31,6 +35,8 @@ public class StringRequest extends Request<String> {
 
     /** Lock to guard mListener as it is cleared on cancel() and read on delivery. */
     private final Object mLock = new Object();
+
+    private byte[] mBody;
 
     @Nullable
     @GuardedBy("mLock")
@@ -60,9 +66,13 @@ public class StringRequest extends Request<String> {
      * @param listener Listener to receive the String response
      * @param errorListener Error listener, or null to ignore errors
      */
-    public StringRequest(
-            String url, Listener<String> listener, @Nullable ErrorListener errorListener) {
+    public StringRequest(String url, Listener<String> listener, @Nullable ErrorListener errorListener) {
         this(Method.GET, url, listener, errorListener);
+    }
+
+    public StringRequest(int method, String url, String body, Listener<String> listener, @Nullable ErrorListener errorListener) {
+        this(method, url, listener, errorListener);
+        this.mBody = body.getBytes();
     }
 
     @Override
@@ -97,5 +107,10 @@ public class StringRequest extends Request<String> {
             parsed = new String(response.data);
         }
         return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+    }
+
+    @Override
+    public byte[] getBody() throws AuthFailureError {
+        return this.mBody;
     }
 }

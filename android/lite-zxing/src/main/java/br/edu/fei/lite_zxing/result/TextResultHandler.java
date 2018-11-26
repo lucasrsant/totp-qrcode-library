@@ -16,10 +16,10 @@
 
 package br.edu.fei.lite_zxing.result;
 
-import android.app.Activity;
-
 import com.google.zxing.Result;
 import com.google.zxing.client.result.ParsedResult;
+
+import android.app.Activity;
 
 import br.edu.fei.lite_zxing.R;
 
@@ -30,12 +30,12 @@ import br.edu.fei.lite_zxing.R;
  */
 public final class TextResultHandler extends ResultHandler {
 
-    private static final int[] buttons = {
+    /*private static final int[] buttons = {
             R.string.button_web_search,
             R.string.button_share_by_email,
             R.string.button_share_by_sms,
             R.string.button_custom_product_search,
-    };
+    };*/
 
     public TextResultHandler(Activity activity, ParsedResult result, Result rawResult) {
         super(activity, result, rawResult);
@@ -43,12 +43,33 @@ public final class TextResultHandler extends ResultHandler {
 
     @Override
     public int getButtonCount() {
-        return hasCustomProductSearch() ? buttons.length : buttons.length - 1;
+        //return hasCustomProductSearch() ? buttons.length : buttons.length - 1;
+        return 0;
     }
 
     @Override
     public int getButtonText(int index) {
-        return buttons[index];
+        //return buttons[index];
+        return 0;
+    }
+
+    @Override
+    public void handleButtonPress(int index) {
+        String text = getResult().getDisplayResult();
+        switch (index) {
+            case 0:
+                webSearch(text);
+                break;
+            case 1:
+                shareByEmail(text);
+                break;
+            case 2:
+                shareBySMS(text);
+                break;
+            case 3:
+                openURL(fillInCustomSearchURL(text));
+                break;
+        }
     }
 
     @Override

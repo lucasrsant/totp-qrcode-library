@@ -26,11 +26,15 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * <p>A utility class which helps ease integration with Barcode Scanner via {@link Intent}s. This is a simple
@@ -107,14 +111,42 @@ import android.os.Bundle;
 public class IntentIntegrator {
 
     public static final int REQUEST_CODE = 0x0000c0de; // Only use bottom 16 bits
+
     private static final String TAG = IntentIntegrator.class.getSimpleName();
+
+    //public static final String DEFAULT_TITLE = "Install Barcode Scanner?";
+    public static final String DEFAULT_MESSAGE =
+            "This application requires Barcode Scanner. Would you like to install it?";
+    public static final String DEFAULT_YES = "Yes";
+    public static final String DEFAULT_NO = "No";
+
+    //private static final String BS_PACKAGE = "com.google.zxing.client.android";
+    private static final String BS_PACKAGE = "br.edu.fei.zxingdemo.scanner";
+    private static final String BSPLUS_PACKAGE = "com.srowen.bs.android";
+
+    // supported barcode formats
+    public static final Collection<String> PRODUCT_CODE_TYPES = list("UPC_A", "UPC_E", "EAN_8", "EAN_13", "RSS_14");
+    public static final Collection<String> ONE_D_CODE_TYPES =
+            list("UPC_A", "UPC_E", "EAN_8", "EAN_13", "CODE_39", "CODE_93", "CODE_128",
+                    "ITF", "RSS_14", "RSS_EXPANDED");
+    public static final Collection<String> QR_CODE_TYPES = Collections.singleton("QR_CODE");
+    public static final Collection<String> DATA_MATRIX_TYPES = Collections.singleton("DATA_MATRIX");
+
+    public static final Collection<String> ALL_CODE_TYPES = null;
+
+    public static final List<String> TARGET_BARCODE_SCANNER_ONLY = Collections.singletonList(BS_PACKAGE);
+    public static final List<String> TARGET_ALL_KNOWN = list(
+            BSPLUS_PACKAGE,             // Barcode Scanner+
+            BSPLUS_PACKAGE + ".simple", // Barcode Scanner+ Simple
+            BS_PACKAGE                  // Barcode Scanner
+            // What else supports this intent?
+    );
 
     // Should be FLAG_ACTIVITY_NEW_DOCUMENT in API 21+.
     // Defined once here because the current value is deprecated, so generates just one warning
     private static final int FLAG_NEW_DOC = Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET;
 
     private final Activity activity;
-    private final Fragment fragment;
 
     private List<String> targetApplications;
     private final Map<String, Object> moreExtras = new HashMap<String, Object>(3);
@@ -124,23 +156,11 @@ public class IntentIntegrator {
      */
     public IntentIntegrator(Activity activity) {
         this.activity = activity;
-        this.fragment = null;
-        initializeConfiguration();
-    }
-
-    /**
-     * @param fragment {@link Fragment} invoking the integration.
-     *                 {@link #startActivityForResult(Intent, int)} will be called on the {@link Fragment} instead
-     *                 of an {@link Activity}
-     */
-    public IntentIntegrator(Fragment fragment) {
-        this.activity = fragment.getActivity();
-        this.fragment = fragment;
         initializeConfiguration();
     }
 
     private void initializeConfiguration() {
-        //targetApplications = TARGET_ALL_KNOWN;
+        targetApplications = TARGET_ALL_KNOWN;
     }
 
     public Collection<String> getTargetApplications() {
@@ -172,9 +192,9 @@ public class IntentIntegrator {
      * @return the {@link AlertDialog} that was shown to the user prompting them to download the app
      * if a prompt was needed, or null otherwise.
      */
-    public final AlertDialog initiateScan(Context context) {
-        return initiateScan(-1, context);
-    }
+    //public final AlertDialog initiateScan(Context context) {
+        //return initiateScan(ALL_CODE_TYPES, -1, context);
+    //}
 
     /**
      * Initiates a scan for all known barcode types with the specified camera.
@@ -184,7 +204,7 @@ public class IntentIntegrator {
      * if a prompt was needed, or null otherwise.
      */
     //public final AlertDialog initiateScan(int cameraId, Context context) {
-    //    return initiateScan(ALL_CODE_TYPES, cameraId, context);
+        //return initiateScan(ALL_CODE_TYPES, cameraId, context);
     //}
 
     /**
@@ -196,8 +216,8 @@ public class IntentIntegrator {
      * @return the {@link AlertDialog} that was shown to the user prompting them to download the app
      * if a prompt was needed, or null otherwise.
      */
-    //public final AlertDialog initiateScan(Context context) {
-        //return initiateScan(-1, context);
+    //public final AlertDialog initiateScan(Collection<String> desiredBarcodeFormats, Context context) {
+        //return initiateScan(desiredBarcodeFormats, -1, context);
     //}
 
     /**
@@ -210,19 +230,19 @@ public class IntentIntegrator {
      * @return the {@link AlertDialog} that was shown to the user prompting them to download the app
      * if a prompt was needed, or null otherwise
      */
-    public final AlertDialog initiateScan(int cameraId, Context context) {
-
+    public final AlertDialog initiateScan(Context context) {
         Intent intentScan = new Intent(context, CaptureActivity.class);
-
         intentScan.addCategory(Intent.CATEGORY_DEFAULT);
         intentScan.putExtra("SCAN_FORMATS", "QR_CODE");
 
-
         // check requested camera ID
-        if (cameraId >= 0) {
-            intentScan.putExtra("SCAN_CAMERA_ID", cameraId);
-        }
+        //if (cameraId >= 0) {
+            //intentScan.putExtra("SCAN_CAMERA_ID", cameraId);
+        //}
 
+        String targetAppPackage = findTargetAppPackage(intentScan);
+
+        intentScan.setPackage(targetAppPackage);
         intentScan.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intentScan.addFlags(FLAG_NEW_DOC);
         attachMoreExtras(intentScan);
@@ -237,14 +257,9 @@ public class IntentIntegrator {
      * @param intent Intent to start.
      * @param code   Request code for the activity
      * @see Activity#startActivityForResult(Intent, int)
-     * @see Fragment#startActivityForResult(Intent, int)
      */
     protected void startActivityForResult(Intent intent, int code) {
-        if (fragment == null) {
-            activity.startActivityForResult(intent, code);
-        } else {
-            fragment.startActivityForResult(intent, code);
-        }
+        activity.startActivityForResult(intent, code);
     }
 
     private String findTargetAppPackage(Intent intent) {
@@ -269,6 +284,41 @@ public class IntentIntegrator {
         }
         return false;
     }
+
+  /*private AlertDialog showDownloadDialog() {
+    AlertDialog.Builder downloadDialog = new AlertDialog.Builder(activity);
+    downloadDialog.setTitle(title);
+    downloadDialog.setMessage(message);
+    downloadDialog.setPositiveButton(buttonYes, new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialogInterface, int i) {
+        String packageName;
+        if (targetApplications.contains(BS_PACKAGE)) {
+          // Prefer to suggest download of BS if it's anywhere in the list
+          packageName = BS_PACKAGE;
+        } else {
+          // Otherwise, first option:
+          packageName = targetApplications.get(0);
+        }
+        Uri uri = Uri.parse("market://details?id=" + packageName);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        try {
+          if (fragment == null) {
+            activity.startActivity(intent);
+          } else {
+            fragment.startActivity(intent);
+          }
+        } catch (ActivityNotFoundException anfe) {
+          // Hmm, market is not installed
+          Log.w(TAG, "Google Play is not installed; cannot install " + packageName);
+        }
+      }
+    });
+    downloadDialog.setNegativeButton(buttonNo, null);
+    downloadDialog.setCancelable(true);
+    return downloadDialog.show();
+  }*/
+
 
     /**
      * <p>Call this from your {@link Activity}'s
@@ -326,7 +376,7 @@ public class IntentIntegrator {
     public final AlertDialog shareText(CharSequence text, CharSequence type) {
         Intent intent = new Intent();
         intent.addCategory(Intent.CATEGORY_DEFAULT);
-        //intent.setAction(BS_PACKAGE + ".ENCODE");
+        intent.setAction(BS_PACKAGE + ".ENCODE");
         intent.putExtra("ENCODE_TYPE", type);
         intent.putExtra("ENCODE_DATA", text);
         String targetAppPackage = findTargetAppPackage(intent);
@@ -337,11 +387,7 @@ public class IntentIntegrator {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(FLAG_NEW_DOC);
         attachMoreExtras(intent);
-        if (fragment == null) {
-            activity.startActivity(intent);
-        } else {
-            fragment.startActivity(intent);
-        }
+        activity.startActivity(intent);
         return null;
     }
 

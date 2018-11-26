@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "br.edu.fei.zxingdemo"
+        applicationId "br.edu.fei.authdemo"
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
@@ -27,4 +27,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation project(path: ':auth-library')
+    compile project(path: ':lite-zxing')
 }

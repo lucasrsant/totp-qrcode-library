@@ -16,7 +16,11 @@
 
 package br.edu.fei.lite_zxing;
 
+import android.content.ActivityNotFoundException;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
+import android.provider.Browser;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
@@ -25,9 +29,11 @@ import com.google.zxing.Result;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,6 +46,8 @@ import br.edu.fei.lite_zxing.camera.CameraManager;
  * @author dswitkin@google.com (Daniel Switkin)
  */
 public final class CaptureActivityHandler extends Handler {
+
+    private static final String TAG = CaptureActivityHandler.class.getSimpleName();
 
     private final CaptureActivity activity;
     private final DecodeThread decodeThread;
@@ -72,10 +80,10 @@ public final class CaptureActivityHandler extends Handler {
     @Override
     public void handleMessage(Message message) {
         switch (message.what) {
-            case Constants.ID_RESTART_PREVIEW:
+            case Constants.ID_RESTART_PREVIEW:// R.id.restart_preview:
                 restartPreviewAndDecode();
                 break;
-            case Constants.ID_DECODE_SUCCEEDEED:
+            case Constants.ID_DECODE_SUCCEEDEED: //R.id.decode_succeeded:
                 state = State.SUCCESS;
                 Bundle bundle = message.getData();
                 Bitmap barcode = null;
@@ -91,22 +99,55 @@ public final class CaptureActivityHandler extends Handler {
                 }
                 activity.handleDecode((Result) message.obj, barcode, scaleFactor);
                 break;
-            case Constants.ID_DECODE_FAILED:
+            case Constants.ID_DECODE_FAILED: //R.id.decode_failed:
                 // We're decoding as fast as possible, so when one decode fails, start another.
                 state = State.PREVIEW;
-                cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+                cameraManager.requestPreviewFrame(decodeThread.getHandler(), Constants.ID_DECODE);
                 break;
-            case Constants.ID_RETURN_SCAN_RESULT:
+            case Constants.ID_RETURN_SCAN_RESULT: //R.id.return_scan_result:
                 activity.setResult(Activity.RESULT_OK, (Intent) message.obj);
                 activity.finish();
                 break;
+            /*case R.id.launch_product_query:
+                String url = (String) message.obj;
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intents.FLAG_NEW_DOC);
+                intent.setData(Uri.parse(url));
+
+                ResolveInfo resolveInfo =
+                        activity.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                String browserPackageName = null;
+                if (resolveInfo != null && resolveInfo.activityInfo != null) {
+                    browserPackageName = resolveInfo.activityInfo.packageName;
+                    Log.d(TAG, "Using browser in package " + browserPackageName);
+                }
+
+                // Needed for default Android browser / Chrome only apparently
+                if (browserPackageName != null) {
+                    switch (browserPackageName) {
+                        case "com.android.browser":
+                        case "com.android.chrome":
+                            intent.setPackage(browserPackageName);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra(Browser.EXTRA_APPLICATION_ID, browserPackageName);
+                            break;
+                    }
+                }
+
+                try {
+                    activity.startActivity(intent);
+                } catch (ActivityNotFoundException ignored) {
+                    Log.w(TAG, "Can't find anything to handle VIEW of URI");
+                }
+                break;*/
         }
     }
 
     public void quitSynchronously() {
         state = State.DONE;
         cameraManager.stopPreview();
-        Message quit = Message.obtain(decodeThread.getHandler(), R.id.quit);
+        Message quit = Message.obtain(decodeThread.getHandler(), Constants.ID_QUIT);
         quit.sendToTarget();
         try {
             // Wait at most half a second; should be enough time, and onPause() will timeout quickly
@@ -116,14 +157,14 @@ public final class CaptureActivityHandler extends Handler {
         }
 
         // Be absolutely sure we don't send any queued up messages
-        removeMessages(R.id.decode_succeeded);
-        removeMessages(R.id.decode_failed);
+        removeMessages(Constants.ID_DECODE_SUCCEEDEED);
+        removeMessages(Constants.ID_DECODE_FAILED);
     }
 
     private void restartPreviewAndDecode() {
         if (state == State.SUCCESS) {
             state = State.PREVIEW;
-            cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+            cameraManager.requestPreviewFrame(decodeThread.getHandler(), Constants.ID_DECODE);
             activity.drawViewfinder();
         }
     }
