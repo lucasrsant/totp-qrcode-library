@@ -7,3 +7,5 @@ target
 *.key
 keys
 **/.gradle
+*.bin
+*.lock

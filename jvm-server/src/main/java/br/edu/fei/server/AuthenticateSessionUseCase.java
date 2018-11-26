@@ -27,6 +27,12 @@ import br.edu.fei.server.payloads.AuthenticateSessionPayload;
         IdentifiedUserRegistration user = userRepository.get(payload.deviceId);
 
         String oneTimePassword = TOTPGenerator.generate(new TOTP(8, 300, session.getHashKey(), HashingAlgorithm.SHA_256));
-        return oneTimePassword.equals(session.getOneTimePassword()) && user.isVerified() ? "authenticated as " + user.email : "not_authenticated";
+        
+        if(oneTimePassword.equals(session.getOneTimePassword()) && user.isVerified()) {
+            authenticationSessionRepository.remove(payload.sessionId);
+            return "authenticated as " + user.email;
+        }
+
+        return "not_authenticated";
     }
 }
