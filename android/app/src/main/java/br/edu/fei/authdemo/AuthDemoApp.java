@@ -16,7 +16,7 @@ public class AuthDemoApp extends Application {
                         .withRegisterDeviceEndpoint("registerDevice")
                         .withConfirmVerificationCodeEndpoint("validateCode")
                         .withAuthenticateSessionEndpoint("authenticateSession")
-                        .withServerHost("http://192.168.4.100:4567")
+                        .withServerHost("http://68.183.16.249:4567")
                         .build());
     }
 }

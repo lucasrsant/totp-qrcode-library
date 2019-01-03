@@ -1,6 +1,6 @@
 package br.edu.fei.serverAuthLibrary;
 
-public class IdentifiedUserRegistration {
+public class IdentifiedDeviceRegistrationPayload {
     /*package*/ String verificationCode;
     /*package*/ String email;
     /*package*/ String deviceId;
