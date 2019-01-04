@@ -22,7 +22,7 @@ public interface Repository<U, V> {
     /***
      * Checks if there is some data associated with the provided identifier.
      * @param uniqueIdentifier The unique identifier
-     * @return <code>true</code> if there is data associated with the provided identifier, otherwise returns <code>false</code>.
+     * @return @{code true} if there is data associated with the provided identifier, otherwise returns {@code false}.
      */
     boolean contains(U uniqueIdentifier);
 

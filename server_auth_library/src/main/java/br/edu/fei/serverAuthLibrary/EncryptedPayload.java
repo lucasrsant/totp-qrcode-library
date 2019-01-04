@@ -5,7 +5,7 @@ package br.edu.fei.serverAuthLibrary;
  */
 public class EncryptedPayload {
     /***
-     * The content of payload. It's encrypted with the <code>sessionKey</code> and encoded in Base64 format.
+     * The content of payload. It's encrypted with the {@code sessionKey} and encoded in Base64 format.
      */
     /*package*/ String content;
 
