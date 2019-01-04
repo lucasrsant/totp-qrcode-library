@@ -5,6 +5,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 
+/***
+ * This class provides functions to encrypt and decrypt content.
+ */
 public class EncryptionManager {
 
     private static byte[] encrypt(byte[] data, Key key, String algorithm) {
@@ -20,6 +23,12 @@ public class EncryptionManager {
         return null;
     }
 
+    /***
+     * Decrypts an {@link EncryptedPayload}.
+     * @param encryptedPayload The payload to be decrypted
+     * @param key The key that decrypts the sessionKey within the {@code encryptedPayload}
+     * @return A byte array that contains the decrypted content of payload.
+     */
     public static byte[] decrypt(EncryptedPayload encryptedPayload, Key key) {
         byte[] encryptedSessionKey = Base64.getDecoder().decode(encryptedPayload.sessionKey);
         byte[] encryptedContent = Base64.getDecoder().decode(encryptedPayload.content);

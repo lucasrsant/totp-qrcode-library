@@ -26,9 +26,9 @@ public class RegisterDeviceUseCase {
      * @return A string indicating the result of registration. It could be "device_already_registered",
      * "unable_to_register_device", or "device_registered".<br>
      * <br>
-     * <code>device_already_registered</code> - Indicates that the device is already registered for the provided email address.<br>
-     * <code>unable_to_register_device</code> - Indicates that the device is already registered for another email address.<br>
-     * <code>device_registered</code> - Indicates that the device was registered successfully.
+     * {@code device_already_registered} - Indicates that the device is already registered for the provided email address.<br>
+     * {@code unable_to_register_device} - Indicates that the device is already registered for another email address.<br>
+     * {@code device_registered} - Indicates that the device was registered successfully.
      */
     public String execute(RegisterDevicePayload request) {
 
